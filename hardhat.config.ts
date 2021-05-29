@@ -11,8 +11,6 @@ import "@nomiclabs/hardhat-waffle";
 import "hardhat-typechain";
 import "hardhat-gas-reporter";
 import "@nomiclabs/hardhat-etherscan";
-import path from "path";
-import fs from "fs";
 
 const chainIds = {
   ganache: 1337,
@@ -65,6 +63,25 @@ const config: HardhatUserConfig = {
       },
       chainId: chainIds.hardhat,
     },
+    arbitrum: {
+      url: "http://localhost:8547",
+      gas: 0,
+      accounts: {
+        mnemonic: "jar deny prosper gasp flush glass core corn alarm treat leg smart",
+        path: "m/44'/60'/0'/0",
+        initialIndex: 0,
+        count: 10,
+      },
+    },
+    geth: {
+      url: "http://localhost:7545",
+      accounts: {
+        mnemonic: "jar deny prosper gasp flush glass core corn alarm treat leg smart",
+        path: "m/44'/60'/0'/0",
+        initialIndex: 0,
+        count: 10,
+      },
+    },
     goerli: createTestnetConfig("goerli"),
     kovan: createTestnetConfig("kovan"),
     rinkeby: createTestnetConfig("rinkeby"),
@@ -73,10 +90,13 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: "0.7.3",
+        version: "0.7.0",
       },
       {
         version: "0.8.0",
+      },
+      {
+        version: "0.8.2",
       },
     ],
   },
