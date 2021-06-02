@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "../libraries/aeERC20.sol";
 import "../libraries/Cloneable.sol";
-import "./IArbStandardToken.sol";
+import "./interfaces/IArbStandardToken.sol";
 import "./ArbTokenBridge.sol";
 import "../libraries/BytesParser.sol";
 

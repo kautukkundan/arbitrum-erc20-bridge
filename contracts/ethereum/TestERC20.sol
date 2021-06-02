@@ -6,6 +6,6 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract TestERC20 is ERC20("Test Token", "TST") {
     constructor() {
-        _mint(msg.sender, 50000000);
+        _mint(msg.sender, 50000 ether);
     }
 }

@@ -3,6 +3,7 @@ import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Contract, ContractFactory } from "@ethersproject/contracts";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { ARB_TOKEN_BRIDGE } from "../scripts/constants";
 chai.use(chaiAsPromised);
 
 const { expect, assert } = chai;
@@ -11,8 +12,9 @@ describe("Token", () => {
   let arbBridge: Contract;
 
   it("should deploy bridge", async function () {
-    const ArbTokenBridgeFactory: ContractFactory = await ethers.getContractFactory("ArbTokenBridge");
-    arbBridge = await ArbTokenBridgeFactory.deploy();
+    // const ArbTokenBridgeFactory: ContractFactory = await ethers.getContractFactory("ArbTokenBridge");
+    // arbBridge = await ArbTokenBridgeFactory.deploy();
+    arbBridge = await ethers.getContractAt("ArbTokenBridge", ARB_TOKEN_BRIDGE);
   });
 
   it("should get erc20 address", async function () {

@@ -26,6 +26,7 @@ const MNEMONIC = process.env.MNEMONIC || "";
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 const INFURA_API_KEY = process.env.INFURA_API_KEY || "";
 const ALCHEMY_KEY = process.env.ALCHEMY_KEY || "";
+const PVT_KEY = process.env.PVT_KEY || "";
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -38,14 +39,9 @@ task("accounts", "Prints the list of accounts", async (args, hre) => {
 });
 
 function createTestnetConfig(network: keyof typeof chainIds): NetworkUserConfig {
-  const url: string = "https://" + network + ".infura.io/v3/" + INFURA_API_KEY;
+  const url: string = "https://eth-" + network + ".alchemyapi.io/v2/" + ALCHEMY_KEY;
   return {
-    accounts: {
-      count: 10,
-      initialIndex: 0,
-      mnemonic: MNEMONIC,
-      path: "m/44'/60'/0'/0",
-    },
+    accounts: [PVT_KEY],
     chainId: chainIds[network],
     url,
   };
@@ -65,13 +61,17 @@ const config: HardhatUserConfig = {
     },
     arbitrum: {
       url: "http://localhost:8547",
-      gas: 0,
       accounts: {
         mnemonic: "jar deny prosper gasp flush glass core corn alarm treat leg smart",
         path: "m/44'/60'/0'/0",
         initialIndex: 0,
         count: 10,
       },
+      gasPrice: 0,
+    },
+    arbitrumLive: {
+      url: "https://kovan5.arbitrum.io/rpc",
+      accounts: [PVT_KEY],
     },
     geth: {
       url: "http://localhost:7545",

@@ -10,9 +10,9 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Create2.sol";
 import "../libraries/BytesParser.sol";
 
-import "./IArbStandardToken.sol";
-import "./IArbToken.sol";
-import "./IArbTokenBridge.sol";
+import "./interfaces/IArbStandardToken.sol";
+import "./interfaces/IArbToken.sol";
+import "./interfaces/IArbTokenBridge.sol";
 import "./ArbSys.sol";
 
 import "../libraries/IERC677.sol";

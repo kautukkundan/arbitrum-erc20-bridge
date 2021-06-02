@@ -10,7 +10,7 @@ import "../libraries/TokenAddressHandler.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import "../arbitrum/IArbTokenBridge.sol";
+import "../arbitrum/interfaces/IArbTokenBridge.sol";
 
 import "./interfaces/IInbox.sol";
 import "./interfaces/IOutbox.sol";
