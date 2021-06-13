@@ -14,36 +14,30 @@ import {
   Contract,
   ContractTransaction,
   Overrides,
+  PayableOverrides,
   CallOverrides,
 } from "@ethersproject/contracts";
 import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
-interface AeERC20Interface extends ethers.utils.Interface {
+interface TestWETH9Interface extends ethers.utils.Interface {
   functions: {
-    "DOMAIN_SEPARATOR()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
+    "deposit()": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
-    "initialize(string,string,uint8)": FunctionFragment;
     "name()": FunctionFragment;
-    "nonces(address)": FunctionFragment;
-    "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
     "symbol()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
-    "transferAndCall(address,uint256,bytes)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
+    "withdraw(uint256)": FunctionFragment;
   };
 
-  encodeFunctionData(
-    functionFragment: "DOMAIN_SEPARATOR",
-    values?: undefined
-  ): string;
   encodeFunctionData(
     functionFragment: "allowance",
     values: [string, string]
@@ -58,28 +52,12 @@ interface AeERC20Interface extends ethers.utils.Interface {
     functionFragment: "decreaseAllowance",
     values: [string, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "deposit", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "increaseAllowance",
     values: [string, BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "initialize",
-    values: [string, string, BigNumberish]
-  ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
-  encodeFunctionData(functionFragment: "nonces", values: [string]): string;
-  encodeFunctionData(
-    functionFragment: "permit",
-    values: [
-      string,
-      string,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BytesLike,
-      BytesLike
-    ]
-  ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "totalSupply",
@@ -90,18 +68,14 @@ interface AeERC20Interface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "transferAndCall",
-    values: [string, BigNumberish, BytesLike]
-  ): string;
-  encodeFunctionData(
     functionFragment: "transferFrom",
     values: [string, string, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "withdraw",
+    values: [BigNumberish]
+  ): string;
 
-  decodeFunctionResult(
-    functionFragment: "DOMAIN_SEPARATOR",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
@@ -110,14 +84,12 @@ interface AeERC20Interface extends ethers.utils.Interface {
     functionFragment: "decreaseAllowance",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "increaseAllowance",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "nonces", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "permit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
@@ -125,24 +97,21 @@ interface AeERC20Interface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "transfer", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "transferAndCall",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "transferFrom",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
-    "Transfer(address,address,uint256,bytes)": EventFragment;
+    "Transfer(address,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
-export class AeERC20 extends Contract {
+export class TestWETH9 extends Contract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -153,17 +122,9 @@ export class AeERC20 extends Contract {
   removeAllListeners(eventName: EventFilter | string): this;
   removeListener(eventName: any, listener: Listener): this;
 
-  interface: AeERC20Interface;
+  interface: TestWETH9Interface;
 
   functions: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
     allowance(
       owner: string,
       spender: string,
@@ -226,6 +187,10 @@ export class AeERC20 extends Contract {
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
+    deposit(overrides?: PayableOverrides): Promise<ContractTransaction>;
+
+    "deposit()"(overrides?: PayableOverrides): Promise<ContractTransaction>;
+
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
@@ -238,20 +203,6 @@ export class AeERC20 extends Contract {
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    initialize(
-      name: string,
-      symbol: string,
-      decimals: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "initialize(string,string,uint8)"(
-      name: string,
-      symbol: string,
-      decimals: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
     name(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
@@ -259,42 +210,6 @@ export class AeERC20 extends Contract {
     "name()"(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
-
-    nonces(
-      owner: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    "nonces(address)"(
-      owner: string,
-      overrides?: CallOverrides
-    ): Promise<{
-      0: BigNumber;
-    }>;
-
-    permit(
-      owner: string,
-      spender: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)"(
-      owner: string,
-      spender: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
 
     symbol(overrides?: CallOverrides): Promise<{
       0: string;
@@ -324,20 +239,6 @@ export class AeERC20 extends Contract {
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    transferAndCall(
-      _to: string,
-      _value: BigNumberish,
-      _data: BytesLike,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "transferAndCall(address,uint256,bytes)"(
-      _to: string,
-      _value: BigNumberish,
-      _data: BytesLike,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
     transferFrom(
       sender: string,
       recipient: string,
@@ -351,11 +252,17 @@ export class AeERC20 extends Contract {
       amount: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
+
+    withdraw(
+      _amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "withdraw(uint256)"(
+      _amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
   };
-
-  DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
-
-  "DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<string>;
 
   allowance(
     owner: string,
@@ -404,6 +311,10 @@ export class AeERC20 extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
+  deposit(overrides?: PayableOverrides): Promise<ContractTransaction>;
+
+  "deposit()"(overrides?: PayableOverrides): Promise<ContractTransaction>;
+
   increaseAllowance(
     spender: string,
     addedValue: BigNumberish,
@@ -416,52 +327,9 @@ export class AeERC20 extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  initialize(
-    name: string,
-    symbol: string,
-    decimals: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "initialize(string,string,uint8)"(
-    name: string,
-    symbol: string,
-    decimals: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
   name(overrides?: CallOverrides): Promise<string>;
 
   "name()"(overrides?: CallOverrides): Promise<string>;
-
-  nonces(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-  "nonces(address)"(
-    owner: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  permit(
-    owner: string,
-    spender: string,
-    value: BigNumberish,
-    deadline: BigNumberish,
-    v: BigNumberish,
-    r: BytesLike,
-    s: BytesLike,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)"(
-    owner: string,
-    spender: string,
-    value: BigNumberish,
-    deadline: BigNumberish,
-    v: BigNumberish,
-    r: BytesLike,
-    s: BytesLike,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
@@ -483,20 +351,6 @@ export class AeERC20 extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  transferAndCall(
-    _to: string,
-    _value: BigNumberish,
-    _data: BytesLike,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "transferAndCall(address,uint256,bytes)"(
-    _to: string,
-    _value: BigNumberish,
-    _data: BytesLike,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
   transferFrom(
     sender: string,
     recipient: string,
@@ -511,11 +365,17 @@ export class AeERC20 extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
+  withdraw(
+    _amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "withdraw(uint256)"(
+    _amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
   callStatic: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
-
-    "DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<string>;
-
     allowance(
       owner: string,
       spender: string,
@@ -563,6 +423,10 @@ export class AeERC20 extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    deposit(overrides?: CallOverrides): Promise<void>;
+
+    "deposit()"(overrides?: CallOverrides): Promise<void>;
+
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
@@ -575,52 +439,9 @@ export class AeERC20 extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    initialize(
-      name: string,
-      symbol: string,
-      decimals: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "initialize(string,string,uint8)"(
-      name: string,
-      symbol: string,
-      decimals: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     name(overrides?: CallOverrides): Promise<string>;
 
     "name()"(overrides?: CallOverrides): Promise<string>;
-
-    nonces(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "nonces(address)"(
-      owner: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    permit(
-      owner: string,
-      spender: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)"(
-      owner: string,
-      spender: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
@@ -642,20 +463,6 @@ export class AeERC20 extends Contract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    transferAndCall(
-      _to: string,
-      _value: BigNumberish,
-      _data: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    "transferAndCall(address,uint256,bytes)"(
-      _to: string,
-      _value: BigNumberish,
-      _data: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
     transferFrom(
       sender: string,
       recipient: string,
@@ -669,6 +476,13 @@ export class AeERC20 extends Contract {
       amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    withdraw(_amount: BigNumberish, overrides?: CallOverrides): Promise<void>;
+
+    "withdraw(uint256)"(
+      _amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
@@ -678,19 +492,10 @@ export class AeERC20 extends Contract {
       value: null
     ): EventFilter;
 
-    Transfer(
-      from: string | null,
-      to: string | null,
-      value: null,
-      data: null
-    ): EventFilter;
+    Transfer(from: string | null, to: string | null, value: null): EventFilter;
   };
 
   estimateGas: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "DOMAIN_SEPARATOR()"(overrides?: CallOverrides): Promise<BigNumber>;
-
     allowance(
       owner: string,
       spender: string,
@@ -738,6 +543,10 @@ export class AeERC20 extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
+    deposit(overrides?: PayableOverrides): Promise<BigNumber>;
+
+    "deposit()"(overrides?: PayableOverrides): Promise<BigNumber>;
+
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
@@ -750,52 +559,9 @@ export class AeERC20 extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    initialize(
-      name: string,
-      symbol: string,
-      decimals: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "initialize(string,string,uint8)"(
-      name: string,
-      symbol: string,
-      decimals: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
     "name()"(overrides?: CallOverrides): Promise<BigNumber>;
-
-    nonces(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
-
-    "nonces(address)"(
-      owner: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    permit(
-      owner: string,
-      spender: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)"(
-      owner: string,
-      spender: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -817,20 +583,6 @@ export class AeERC20 extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    transferAndCall(
-      _to: string,
-      _value: BigNumberish,
-      _data: BytesLike,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "transferAndCall(address,uint256,bytes)"(
-      _to: string,
-      _value: BigNumberish,
-      _data: BytesLike,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
     transferFrom(
       sender: string,
       recipient: string,
@@ -844,15 +596,16 @@ export class AeERC20 extends Contract {
       amount: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
+
+    withdraw(_amount: BigNumberish, overrides?: Overrides): Promise<BigNumber>;
+
+    "withdraw(uint256)"(
+      _amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "DOMAIN_SEPARATOR()"(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     allowance(
       owner: string,
       spender: string,
@@ -903,6 +656,10 @@ export class AeERC20 extends Contract {
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
+    deposit(overrides?: PayableOverrides): Promise<PopulatedTransaction>;
+
+    "deposit()"(overrides?: PayableOverrides): Promise<PopulatedTransaction>;
+
     increaseAllowance(
       spender: string,
       addedValue: BigNumberish,
@@ -915,55 +672,9 @@ export class AeERC20 extends Contract {
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    initialize(
-      name: string,
-      symbol: string,
-      decimals: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "initialize(string,string,uint8)"(
-      name: string,
-      symbol: string,
-      decimals: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "name()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    nonces(
-      owner: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    "nonces(address)"(
-      owner: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    permit(
-      owner: string,
-      spender: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)"(
-      owner: string,
-      spender: string,
-      value: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -985,20 +696,6 @@ export class AeERC20 extends Contract {
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    transferAndCall(
-      _to: string,
-      _value: BigNumberish,
-      _data: BytesLike,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "transferAndCall(address,uint256,bytes)"(
-      _to: string,
-      _value: BigNumberish,
-      _data: BytesLike,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
     transferFrom(
       sender: string,
       recipient: string,
@@ -1010,6 +707,16 @@ export class AeERC20 extends Contract {
       sender: string,
       recipient: string,
       amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    withdraw(
+      _amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "withdraw(uint256)"(
+      _amount: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
   };

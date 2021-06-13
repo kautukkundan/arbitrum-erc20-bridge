@@ -26,17 +26,16 @@ interface StandardArbERC20Interface extends ethers.utils.Interface {
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
-    "bridge()": FunctionFragment;
     "bridgeBurn(address,uint256)": FunctionFragment;
     "bridgeInit(address,bytes)": FunctionFragment;
     "bridgeMint(address,uint256)": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
-    "initialize(string,string)": FunctionFragment;
+    "initialize(string,string,uint8)": FunctionFragment;
     "isMaster()": FunctionFragment;
     "l1Address()": FunctionFragment;
-    "migrate(address,uint256)": FunctionFragment;
+    "l2Gateway()": FunctionFragment;
     "name()": FunctionFragment;
     "nonces(address)": FunctionFragment;
     "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
@@ -45,7 +44,6 @@ interface StandardArbERC20Interface extends ethers.utils.Interface {
     "transfer(address,uint256)": FunctionFragment;
     "transferAndCall(address,uint256,bytes)": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
-    "withdraw(address,uint256)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -61,7 +59,6 @@ interface StandardArbERC20Interface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
-  encodeFunctionData(functionFragment: "bridge", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "bridgeBurn",
     values: [string, BigNumberish]
@@ -85,14 +82,11 @@ interface StandardArbERC20Interface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [string, string]
+    values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "isMaster", values?: undefined): string;
   encodeFunctionData(functionFragment: "l1Address", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "migrate",
-    values: [string, BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "l2Gateway", values?: undefined): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "nonces", values: [string]): string;
   encodeFunctionData(
@@ -124,10 +118,6 @@ interface StandardArbERC20Interface extends ethers.utils.Interface {
     functionFragment: "transferFrom",
     values: [string, string, BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "withdraw",
-    values: [string, BigNumberish]
-  ): string;
 
   decodeFunctionResult(
     functionFragment: "DOMAIN_SEPARATOR",
@@ -136,7 +126,6 @@ interface StandardArbERC20Interface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "bridge", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "bridgeBurn", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "bridgeInit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "bridgeMint", data: BytesLike): Result;
@@ -152,7 +141,7 @@ interface StandardArbERC20Interface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isMaster", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "l1Address", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "migrate", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "l2Gateway", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "nonces", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "permit", data: BytesLike): Result;
@@ -170,7 +159,6 @@ interface StandardArbERC20Interface extends ethers.utils.Interface {
     functionFragment: "transferFrom",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 
   events: {
     "Approval(address,address,uint256)": EventFragment;
@@ -245,14 +233,6 @@ export class StandardArbERC20 extends Contract {
       0: BigNumber;
     }>;
 
-    bridge(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
-    "bridge()"(overrides?: CallOverrides): Promise<{
-      0: string;
-    }>;
-
     bridgeBurn(
       account: string,
       amount: BigNumberish,
@@ -324,12 +304,14 @@ export class StandardArbERC20 extends Contract {
     initialize(
       name: string,
       symbol: string,
+      decimals: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
-    "initialize(string,string)"(
+    "initialize(string,string,uint8)"(
       name: string,
       symbol: string,
+      decimals: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
@@ -349,17 +331,13 @@ export class StandardArbERC20 extends Contract {
       0: string;
     }>;
 
-    migrate(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    l2Gateway(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
 
-    "migrate(address,uint256)"(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
+    "l2Gateway()"(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
 
     name(overrides?: CallOverrides): Promise<{
       0: string;
@@ -460,18 +438,6 @@ export class StandardArbERC20 extends Contract {
       amount: BigNumberish,
       overrides?: Overrides
     ): Promise<ContractTransaction>;
-
-    withdraw(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
-
-    "withdraw(address,uint256)"(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<ContractTransaction>;
   };
 
   DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
@@ -508,10 +474,6 @@ export class StandardArbERC20 extends Contract {
     account: string,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
-
-  bridge(overrides?: CallOverrides): Promise<string>;
-
-  "bridge()"(overrides?: CallOverrides): Promise<string>;
 
   bridgeBurn(
     account: string,
@@ -580,12 +542,14 @@ export class StandardArbERC20 extends Contract {
   initialize(
     name: string,
     symbol: string,
+    decimals: BigNumberish,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  "initialize(string,string)"(
+  "initialize(string,string,uint8)"(
     name: string,
     symbol: string,
+    decimals: BigNumberish,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
@@ -597,17 +561,9 @@ export class StandardArbERC20 extends Contract {
 
   "l1Address()"(overrides?: CallOverrides): Promise<string>;
 
-  migrate(
-    account: string,
-    amount: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
+  l2Gateway(overrides?: CallOverrides): Promise<string>;
 
-  "migrate(address,uint256)"(
-    account: string,
-    amount: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
+  "l2Gateway()"(overrides?: CallOverrides): Promise<string>;
 
   name(overrides?: CallOverrides): Promise<string>;
 
@@ -690,18 +646,6 @@ export class StandardArbERC20 extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
-  withdraw(
-    account: string,
-    amount: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
-  "withdraw(address,uint256)"(
-    account: string,
-    amount: BigNumberish,
-    overrides?: Overrides
-  ): Promise<ContractTransaction>;
-
   callStatic: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
 
@@ -737,10 +681,6 @@ export class StandardArbERC20 extends Contract {
       account: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    bridge(overrides?: CallOverrides): Promise<string>;
-
-    "bridge()"(overrides?: CallOverrides): Promise<string>;
 
     bridgeBurn(
       account: string,
@@ -809,12 +749,14 @@ export class StandardArbERC20 extends Contract {
     initialize(
       name: string,
       symbol: string,
+      decimals: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    "initialize(string,string)"(
+    "initialize(string,string,uint8)"(
       name: string,
       symbol: string,
+      decimals: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -826,17 +768,9 @@ export class StandardArbERC20 extends Contract {
 
     "l1Address()"(overrides?: CallOverrides): Promise<string>;
 
-    migrate(
-      account: string,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    l2Gateway(overrides?: CallOverrides): Promise<string>;
 
-    "migrate(address,uint256)"(
-      account: string,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
+    "l2Gateway()"(overrides?: CallOverrides): Promise<string>;
 
     name(overrides?: CallOverrides): Promise<string>;
 
@@ -918,18 +852,6 @@ export class StandardArbERC20 extends Contract {
       amount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    withdraw(
-      account: string,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "withdraw(address,uint256)"(
-      account: string,
-      amount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
   };
 
   filters: {
@@ -982,10 +904,6 @@ export class StandardArbERC20 extends Contract {
       account: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    bridge(overrides?: CallOverrides): Promise<BigNumber>;
-
-    "bridge()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     bridgeBurn(
       account: string,
@@ -1054,12 +972,14 @@ export class StandardArbERC20 extends Contract {
     initialize(
       name: string,
       symbol: string,
+      decimals: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
-    "initialize(string,string)"(
+    "initialize(string,string,uint8)"(
       name: string,
       symbol: string,
+      decimals: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
 
@@ -1071,17 +991,9 @@ export class StandardArbERC20 extends Contract {
 
     "l1Address()"(overrides?: CallOverrides): Promise<BigNumber>;
 
-    migrate(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
+    l2Gateway(overrides?: CallOverrides): Promise<BigNumber>;
 
-    "migrate(address,uint256)"(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
+    "l2Gateway()"(overrides?: CallOverrides): Promise<BigNumber>;
 
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1163,18 +1075,6 @@ export class StandardArbERC20 extends Contract {
       amount: BigNumberish,
       overrides?: Overrides
     ): Promise<BigNumber>;
-
-    withdraw(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
-
-    "withdraw(address,uint256)"(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -1217,10 +1117,6 @@ export class StandardArbERC20 extends Contract {
       account: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    bridge(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    "bridge()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     bridgeBurn(
       account: string,
@@ -1289,12 +1185,14 @@ export class StandardArbERC20 extends Contract {
     initialize(
       name: string,
       symbol: string,
+      decimals: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
-    "initialize(string,string)"(
+    "initialize(string,string,uint8)"(
       name: string,
       symbol: string,
+      decimals: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
@@ -1306,17 +1204,9 @@ export class StandardArbERC20 extends Contract {
 
     "l1Address()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    migrate(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
+    l2Gateway(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    "migrate(address,uint256)"(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
+    "l2Gateway()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -1398,18 +1288,6 @@ export class StandardArbERC20 extends Contract {
     "transferFrom(address,address,uint256)"(
       sender: string,
       recipient: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    withdraw(
-      account: string,
-      amount: BigNumberish,
-      overrides?: Overrides
-    ): Promise<PopulatedTransaction>;
-
-    "withdraw(address,uint256)"(
-      account: string,
       amount: BigNumberish,
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;

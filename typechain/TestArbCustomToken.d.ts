@@ -20,19 +20,24 @@ import { BytesLike } from "@ethersproject/bytes";
 import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 
-interface AeERC20Interface extends ethers.utils.Interface {
+interface TestArbCustomTokenInterface extends ethers.utils.Interface {
   functions: {
     "DOMAIN_SEPARATOR()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "bridge()": FunctionFragment;
+    "bridgeBurn(address,uint256)": FunctionFragment;
+    "bridgeMint(address,uint256)": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
     "increaseAllowance(address,uint256)": FunctionFragment;
     "initialize(string,string,uint8)": FunctionFragment;
+    "l1Address()": FunctionFragment;
     "name()": FunctionFragment;
     "nonces(address)": FunctionFragment;
     "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
+    "someWackyCustomStuff()": FunctionFragment;
     "symbol()": FunctionFragment;
     "totalSupply()": FunctionFragment;
     "transfer(address,uint256)": FunctionFragment;
@@ -53,6 +58,15 @@ interface AeERC20Interface extends ethers.utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(functionFragment: "bridge", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "bridgeBurn",
+    values: [string, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "bridgeMint",
+    values: [string, BigNumberish]
+  ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "decreaseAllowance",
@@ -66,6 +80,7 @@ interface AeERC20Interface extends ethers.utils.Interface {
     functionFragment: "initialize",
     values: [string, string, BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "l1Address", values?: undefined): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(functionFragment: "nonces", values: [string]): string;
   encodeFunctionData(
@@ -79,6 +94,10 @@ interface AeERC20Interface extends ethers.utils.Interface {
       BytesLike,
       BytesLike
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "someWackyCustomStuff",
+    values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
@@ -105,6 +124,9 @@ interface AeERC20Interface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "allowance", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "bridge", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "bridgeBurn", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "bridgeMint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "decreaseAllowance",
@@ -115,9 +137,14 @@ interface AeERC20Interface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "l1Address", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "nonces", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "permit", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "someWackyCustomStuff",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "totalSupply",
@@ -142,7 +169,7 @@ interface AeERC20Interface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
-export class AeERC20 extends Contract {
+export class TestArbCustomToken extends Contract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -153,7 +180,7 @@ export class AeERC20 extends Contract {
   removeAllListeners(eventName: EventFilter | string): this;
   removeListener(eventName: any, listener: Listener): this;
 
-  interface: AeERC20Interface;
+  interface: TestArbCustomTokenInterface;
 
   functions: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<{
@@ -206,6 +233,38 @@ export class AeERC20 extends Contract {
       0: BigNumber;
     }>;
 
+    bridge(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    "bridge()"(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    bridgeBurn(
+      account: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "bridgeBurn(address,uint256)"(
+      account: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    bridgeMint(
+      account: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    "bridgeMint(address,uint256)"(
+      account: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
     decimals(overrides?: CallOverrides): Promise<{
       0: number;
     }>;
@@ -252,6 +311,14 @@ export class AeERC20 extends Contract {
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
+    l1Address(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
+    "l1Address()"(overrides?: CallOverrides): Promise<{
+      0: string;
+    }>;
+
     name(overrides?: CallOverrides): Promise<{
       0: string;
     }>;
@@ -293,6 +360,12 @@ export class AeERC20 extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
+      overrides?: Overrides
+    ): Promise<ContractTransaction>;
+
+    someWackyCustomStuff(overrides?: Overrides): Promise<ContractTransaction>;
+
+    "someWackyCustomStuff()"(
       overrides?: Overrides
     ): Promise<ContractTransaction>;
 
@@ -388,6 +461,34 @@ export class AeERC20 extends Contract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  bridge(overrides?: CallOverrides): Promise<string>;
+
+  "bridge()"(overrides?: CallOverrides): Promise<string>;
+
+  bridgeBurn(
+    account: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "bridgeBurn(address,uint256)"(
+    account: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  bridgeMint(
+    account: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
+  "bridgeMint(address,uint256)"(
+    account: string,
+    amount: BigNumberish,
+    overrides?: Overrides
+  ): Promise<ContractTransaction>;
+
   decimals(overrides?: CallOverrides): Promise<number>;
 
   "decimals()"(overrides?: CallOverrides): Promise<number>;
@@ -430,6 +531,10 @@ export class AeERC20 extends Contract {
     overrides?: Overrides
   ): Promise<ContractTransaction>;
 
+  l1Address(overrides?: CallOverrides): Promise<string>;
+
+  "l1Address()"(overrides?: CallOverrides): Promise<string>;
+
   name(overrides?: CallOverrides): Promise<string>;
 
   "name()"(overrides?: CallOverrides): Promise<string>;
@@ -462,6 +567,10 @@ export class AeERC20 extends Contract {
     s: BytesLike,
     overrides?: Overrides
   ): Promise<ContractTransaction>;
+
+  someWackyCustomStuff(overrides?: Overrides): Promise<ContractTransaction>;
+
+  "someWackyCustomStuff()"(overrides?: Overrides): Promise<ContractTransaction>;
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
@@ -547,6 +656,34 @@ export class AeERC20 extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    bridge(overrides?: CallOverrides): Promise<string>;
+
+    "bridge()"(overrides?: CallOverrides): Promise<string>;
+
+    bridgeBurn(
+      account: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "bridgeBurn(address,uint256)"(
+      account: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    bridgeMint(
+      account: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "bridgeMint(address,uint256)"(
+      account: string,
+      amount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     decimals(overrides?: CallOverrides): Promise<number>;
 
     "decimals()"(overrides?: CallOverrides): Promise<number>;
@@ -589,6 +726,10 @@ export class AeERC20 extends Contract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    l1Address(overrides?: CallOverrides): Promise<string>;
+
+    "l1Address()"(overrides?: CallOverrides): Promise<string>;
+
     name(overrides?: CallOverrides): Promise<string>;
 
     "name()"(overrides?: CallOverrides): Promise<string>;
@@ -621,6 +762,10 @@ export class AeERC20 extends Contract {
       s: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    someWackyCustomStuff(overrides?: CallOverrides): Promise<void>;
+
+    "someWackyCustomStuff()"(overrides?: CallOverrides): Promise<void>;
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
@@ -722,6 +867,34 @@ export class AeERC20 extends Contract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    bridge(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "bridge()"(overrides?: CallOverrides): Promise<BigNumber>;
+
+    bridgeBurn(
+      account: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "bridgeBurn(address,uint256)"(
+      account: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    bridgeMint(
+      account: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
+    "bridgeMint(address,uint256)"(
+      account: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<BigNumber>;
+
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
     "decimals()"(overrides?: CallOverrides): Promise<BigNumber>;
@@ -764,6 +937,10 @@ export class AeERC20 extends Contract {
       overrides?: Overrides
     ): Promise<BigNumber>;
 
+    l1Address(overrides?: CallOverrides): Promise<BigNumber>;
+
+    "l1Address()"(overrides?: CallOverrides): Promise<BigNumber>;
+
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
     "name()"(overrides?: CallOverrides): Promise<BigNumber>;
@@ -796,6 +973,10 @@ export class AeERC20 extends Contract {
       s: BytesLike,
       overrides?: Overrides
     ): Promise<BigNumber>;
+
+    someWackyCustomStuff(overrides?: Overrides): Promise<BigNumber>;
+
+    "someWackyCustomStuff()"(overrides?: Overrides): Promise<BigNumber>;
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -887,6 +1068,34 @@ export class AeERC20 extends Contract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    bridge(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "bridge()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    bridgeBurn(
+      account: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "bridgeBurn(address,uint256)"(
+      account: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    bridgeMint(
+      account: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    "bridgeMint(address,uint256)"(
+      account: string,
+      amount: BigNumberish,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "decimals()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -929,6 +1138,10 @@ export class AeERC20 extends Contract {
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 
+    l1Address(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    "l1Address()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     "name()"(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -962,6 +1175,12 @@ export class AeERC20 extends Contract {
       v: BigNumberish,
       r: BytesLike,
       s: BytesLike,
+      overrides?: Overrides
+    ): Promise<PopulatedTransaction>;
+
+    someWackyCustomStuff(overrides?: Overrides): Promise<PopulatedTransaction>;
+
+    "someWackyCustomStuff()"(
       overrides?: Overrides
     ): Promise<PopulatedTransaction>;
 

@@ -70,7 +70,7 @@ const config: HardhatUserConfig = {
       gasPrice: 0,
     },
     arbitrumLive: {
-      url: "https://kovan5.arbitrum.io/rpc",
+      url: "https://rinkeby.arbitrum.io/rpc",
       accounts: [PVT_KEY],
     },
     geth: {
@@ -90,13 +90,10 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: "0.7.0",
+        version: "0.8.2",
       },
       {
         version: "0.8.0",
-      },
-      {
-        version: "0.8.2",
       },
     ],
   },
