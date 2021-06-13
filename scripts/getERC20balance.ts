@@ -16,7 +16,7 @@ async function main(): Promise<void> {
   //   );
 
   const Erc20 = await ethers.getContractFactory("StandardArbERC20");
-  const erc20 = Erc20.attach("0xAfAD5ACf8bF17aF2c22322b3D64e7c5c3AeEa6eC");
+  const erc20 = Erc20.attach("0x612f76E14C3d3A0970A0Db98fab612A933288134");
 
   //   await erc20.migrate("0xC96f6B72843Af1988C98F78eAB3E47673af63eA1", ethers.utils.parseEther("100"));
 

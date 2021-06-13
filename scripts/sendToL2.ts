@@ -4,7 +4,9 @@ import { ethers } from "hardhat";
 async function main(): Promise<void> {
   const ARB_RETRY_ADDRESS = "0x000000000000000000000000000000000000006E";
   const arbRety: Contract = await ethers.getContractAt("ArbRetryableTx", ARB_RETRY_ADDRESS);
-  await arbRety.redeem("0xa39c9494fc307a457addba7a422937e89d91322264e4ed0675904b48a98d1ee7", { gasLimit: 210000 });
+  await arbRety.redeem("0xf2985ccfeb636eecb8a0695ce856d712c8fb4e6ba2c89c3e7dd9d1d3e4d5708c", {
+    gasLimit: 2100000,
+  });
 }
 
 main()

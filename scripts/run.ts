@@ -1,71 +1,60 @@
-import { BigNumber } from "ethers";
-import { ethers } from "hardhat";
-import { ARB_TOKEN_BRIDGE, ETH_ERC20_BRIDGE, TEST_ERC20 } from "./constants";
+import { BigNumber, Contract } from "ethers";
+import { Bridge } from "arb-ts";
 
-async function main(): Promise<void> {
-  const testToken = await ethers.getContractAt("TestERC20", TEST_ERC20);
-  const balance = await testToken.balanceOf("0x81183C9C61bdf79DB7330BBcda47Be30c0a85064");
-  console.log(balance.toString());
+import { ethers as ethersH } from "hardhat";
+import { Wallet, ethers } from "ethers";
+import { ETH_ERC20_BRIDGE_LIVE, ARB_TOKEN_BRIDGE_LIVE } from "./constants";
 
-  await testToken.approve(ETH_ERC20_BRIDGE, balance);
+import arbRetry from "../artifacts/contracts/arbitrum/interfaces/IArbRetryableTx.sol/ArbRetryableTx.json";
 
-  const ethErc20Bridge = await ethers.getContractAt("IEthERC20Bridge", ETH_ERC20_BRIDGE);
+async function main() {
+  const EOA = "0xc96f6b72843af1988c98f78eab3e47673af63ea1";
+  const TEST_ERC20 = "0x2bf2997d800f7bd3ab08db793cad70ebb2e3c10d";
 
-  const maxSubmissionCost = 1000000000;
-  const maxGas = 1000000000;
-  const gasPrice = ethers.utils.parseUnits("10", "gwei");
-  const tokenAmount = ethers.utils.parseEther("100");
-  const to = "0x81183C9C61bdf79DB7330BBcda47Be30c0a85064";
+  //   const testToken = await ethersH.getContractAt("TestERC20", TEST_ERC20);
+  //   const balance = await testToken.balanceOf(EOA);
+  //   console.log(balance.toString());
+  const gasPriceL1 = await ethersH.provider.getGasPrice();
 
-  const tx = await ethErc20Bridge.deposit(TEST_ERC20, to, tokenAmount, maxSubmissionCost, maxGas, gasPrice, "0x", {
-    gasLimit: 210000,
-    value: ethers.utils.parseEther("0.0005"),
+  const ethErc20Bridge = await ethersH.getContractAt("IEthERC20Bridge", ETH_ERC20_BRIDGE_LIVE);
+
+  const amount = ethers.utils.parseEther("11");
+
+  const [isDeployed, depositCalldata] = await ethErc20Bridge.getDepositCalldata(TEST_ERC20, EOA, EOA, amount, "0x");
+
+  const l2provider = new ethers.providers.JsonRpcProvider("https://kovan5.arbitrum.io/rpc");
+
+  const gasPriceBid = await l2provider.getGasPrice();
+
+  const expectedGas = await l2provider.estimateGas({
+    from: ETH_ERC20_BRIDGE_LIVE,
+    to: ARB_TOKEN_BRIDGE_LIVE,
+    data: depositCalldata,
   });
 
-  // GET SEQ ID FROM EVENT DATA
+  const maxSubmissionPriceIncreaseRatio = BigNumber.from(13);
+
+  const ARB_RETRY_ADDRESS = "0x000000000000000000000000000000000000006E";
+  const arbRety: Contract = new ethers.Contract(ARB_RETRY_ADDRESS, arbRetry.abi, l2provider);
+
+  const maxSubmissionPrice = (await arbRety.getSubmissionPrice(depositCalldata.length - 2))[0]
+    .mul(maxSubmissionPriceIncreaseRatio)
+    .div(BigNumber.from(10));
+
+  const ethDeposit = await maxSubmissionPrice.add(gasPriceBid.mul(expectedGas));
+
+  const tx = await ethErc20Bridge.deposit(TEST_ERC20, EOA, amount, maxSubmissionPrice, expectedGas, gasPriceBid, "0x", {
+    gasLimit: 210000,
+    gasPrice: gasPriceL1,
+    value: ethDeposit,
+  });
+
   const depositRec = await tx.wait();
-
-  const iface = ethErc20Bridge.interface;
-  const event = iface.getEvent("DepositToken");
-  const eventTopic = iface.getEventTopic(event);
-
-  const logs = depositRec.logs.filter((log: any) => log.topics[0] === eventTopic);
-  const logData = logs.map((log: any) => iface.parseLog(log).args);
-  const seqNum = logData[0].seqNum;
-
-  // GET REQ ID FROM SEQ ID
-  const arbProvider = new ethers.providers.JsonRpcProvider("http://localhost:8547");
-  const chainID = ethers.BigNumber.from((await arbProvider.getNetwork()).chainId);
-
-  //   const first = ethers.utils.solidityKeccak256(["uint256", "uint256"], [chainID, seqNum]);
-  //   const second = ethers.utils.solidityKeccak256(["bytes32", "uint256"], [first, 0]);
-
-  //   console.log(second);
-
-  const bitFlipSeqNum = (seqNum: BigNumber) => {
-    return seqNum.or(BigNumber.from(1).shl(255));
-  };
-
-  const reqID = ethers.utils.keccak256(
-    ethers.utils.concat([
-      ethers.utils.zeroPad(chainID.toHexString(), 32),
-      ethers.utils.zeroPad(bitFlipSeqNum(seqNum).toHexString(), 32),
-    ]),
-  );
-
-  // GET redeemID
-  const txId = ethers.utils.keccak256(
-    ethers.utils.concat([ethers.utils.zeroPad(reqID, 32), ethers.utils.zeroPad(BigNumber.from(1).toHexString(), 32)]),
-  );
-
-  //   const r = await arbProvider.waitForTransaction(redeemID);
-
-  console.log(txId);
 }
 
 main()
   .then(() => process.exit(0))
-  .catch((error: Error) => {
+  .catch(error => {
     console.error(error);
     process.exit(1);
   });

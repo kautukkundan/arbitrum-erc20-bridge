@@ -2,8 +2,8 @@ import { ethers } from "hardhat";
 import { ARB_TOKEN_BRIDGE } from "./constants";
 
 async function main(): Promise<void> {
-  const arbBridge = await ethers.getContractAt("IArbTokenBridge", "0x5DfBB3D6775B7D0e702D6c9Ccd1fCF4Ba08DA97c");
-  const L1Token = "0x67738AfC12d4291507b2be116c6F95c24507840C";
+  const arbBridge = await ethers.getContractAt("EthERC20Bridge", "0x1387A12276195FE462bb9608eD470a72830256Ef");
+  const L1Token = "0x3b0eB1E65639ff94167Ea13F2E6EEc51103f77cc";
   const address = await arbBridge.calculateL2TokenAddress(L1Token);
   console.log(address);
 }
