@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
@@ -11,7 +10,7 @@ interface ProxySetter {
 }
 
 contract ClonableBeaconProxy is BeaconProxy {
-    constructor() public BeaconProxy(ProxySetter(msg.sender).beacon(), "") {}
+    constructor() BeaconProxy(ProxySetter(msg.sender).beacon(), "") {}
 }
 
 contract BeaconProxyFactory is ProxySetter {
